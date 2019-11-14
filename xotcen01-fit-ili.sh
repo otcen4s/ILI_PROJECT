@@ -19,7 +19,7 @@ done
 
 for i in {0..3}; do
 	echo "Creating loop device $i ..."
-	losetup loop$i disk$i  #creating loop device 
+	losetup /dev/loop$i disk$i  #creating loop device 
 done
 echo "To print the loop device generated using the above command use \"losetup-a\"" 
 
@@ -29,10 +29,9 @@ echo "----------------------------------------------"
 echo "Creating RAID0 ..."
 mdadm --create /dev/md0 --level=0 --raid-devices=2 /dev/loop2 /dev/loop3
 echo "Creating RAID1 ..."
-mdadm --create /dev/md1 --level=mirror --raid-devices=2 /dev/loop0 /dev/loop1
+mdadm --create /dev/md1 --level=1 --raid-devices=2 /dev/loop0 /dev/loop1
 echo "Showing changes ..."
 mdadm --detail /dev/md0 /dev/md1
-#echo -e "\nYou can examine the created raid devices in detail using \"mdadm --detail /dev/md_number\" "
 
 
 ##### Initializing Physical Volumes #####
@@ -103,10 +102,10 @@ sha512sum  /mnt/test1/big_file
 ##### Emulating faulty disk replacement #####
 echo "---------------------------------------------------"
 echo "Creating 5th loop device representing new disk (200 MB) ..."
-dd if=/dev/zero of=new_disk bs=1MB count=200
-losetup loop5  new_disk
-echo "Replacing disk 'loop0' in RAID1 array with 'new_loop'" #replacement
-mdadm --manage /dev/md1 --replace /dev/loop0 --with /dev/loop5
+dd if=/dev/zero of=disk4 bs=1MB count=200
+losetup /dev/loop4 disk4
+echo "Replacing disk 'loop0' in RAID1 array with 'loop4'" #replacement
+mdadm --manage /dev/md1 --replace /dev/loop0 --with /dev/loop4
 echo "Verifying replacement ..."
 mdadm --detail /dev/md1
 
