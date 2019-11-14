@@ -1,5 +1,11 @@
 #!/bin/bash
 
+##### Check root #####
+if [[ $EUID -ne 0 ]]; then
+	echo "This script must be run as root"
+	exit 1
+fi
+
 ##### Creating 4 loop devices #####
 echo "-------------------------------------------"
 echo "Creating 4 loop devices"
@@ -19,10 +25,9 @@ echo "To print the loop device generated using the above command use \"losetup-a
 ###### Creating RAID0 and RAID1 ######
 echo "----------------------------------------------"
 echo "Creating RAID0 ..."
-mdadm --create --verbose /dev/md1 --level=1 --raid-devices=2 /dev/loop0 /dev/loop1
 mdadm --create --verbose /dev/md0 --level=0 --raid-devices=2 /dev/loop2 /dev/loop3
 echo "Creating RAID1 ..."
-#mdadm --create /dev/md1 --level=1 --raid-devices=2 /dev/loop0 /dev/loop1
+mdadm --create --verbose /dev/md1 --level=1 --raid-devices=2 /dev/loop0 /dev/loop1
 echo "You can examine the created raid devices in detail using \"mdadm --detail /dev/md_number\" "
 
 ###### Creating VG #####
@@ -46,10 +51,11 @@ echo "------------------------------------------------"
 echo "Creating XFS on FIT_1v2 logical volume ..."
 mkfs.xfs /dev/FIT_vg/FIT_1v2
 
-##### Mounting FIT_1v1 to /mnt/test1 #####
+##### Mounting FIT_1v1 to /mnt/test1 and FIT_1v2 to /mnt/test2 #####
 echo "------------------------------------------------"
 echo "Creating directories test1 test2 in /mnt..."
 mkdir -p -v /mnt/test1 /mnt/test2
 echo "Mounting FIT_1v1 to /mnt/test1 ..."
 mount /dev/FIT_vg/FIT_1v1 /mnt/test1
+echo "Mounting FIT_1v2 to /mnt/test2"
 mount /dev/FIT_vg/FIT_1v2 /mnt/test2
