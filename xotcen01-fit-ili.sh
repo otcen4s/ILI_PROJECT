@@ -59,8 +59,8 @@ vgdisplay FIT_vg
 echo "-----------------------------------------------"
 
 echo "Creating LVM Logical volume in Volume group FIT_vg ..."
-lvcreate FIT_vg -n FIT_lv1 -L100M #Creating 2 logical volumes of size 100MB
-lvcreate FIT_vg -n FIT_lv2 -L100M
+lvcreate FIT_vg -n FIT_lv1 -L100MB #Creating 2 logical volumes of size 100MB
+lvcreate FIT_vg -n FIT_lv2 -L100MB
 
 echo "Displaying LVM ..."
 lvdisplay FIT_vg
@@ -100,9 +100,10 @@ echo "Printing informations ..."
 df -h
 
 echo "Resizing filesystem on FIT_1v1 ..."
-umount /mnt/test1
+umount /dev/FIT_vg/FIT_lv1
 
 lvextend -l +100%FREE /dev/FIT_vg/FIT_lv1
+
 resize2fs /dev/FIT_vg/FIT_lv1
 
 mount /dev/FIT_vg/FIT_lv1 /mnt/test1
@@ -128,11 +129,11 @@ sha512sum  /mnt/test1/big_file
 echo "---------------------------------------------------"
 
 echo "Creating 5th loop device representing new disk (200 MB) ..."
-dd if=/dev/zero of=disk4 bs=1MB count=200
-losetup /dev/loop4 disk4
+dd if=/dev/zero of=disk_replace bs=1MB count=200
+losetup /dev/loop4 disk_replace
 
-echo "Adding new disk ..."
-mdadm --manage /dev/md1 --add /dev/loop4
+#unmounting
+umount /dev/FIT_vg/FIT_lv1
 
 echo "Setting faulty disk ..."
 mdadm --manage /dev/md1 --fail /dev/loop0
@@ -143,9 +144,14 @@ cat /proc/mdstat
 echo "Removing faulty disk ..." 
 mdadm --manage /dev/md1 --remove /dev/loop0
 
-#echo "Replacing disk 'loop0' in RAID1 array with 'loop4' ..." #replacement
-#mdadm --manage /dev/md1 --replace /dev/loop0 --with /dev/loop4
+echo "Adding new disk ..."
+mdadm --manage /dev/md1 --add /dev/loop4
+
+#mount back
+mount /dev/FIT_vg/FIT_lv1 /mnt/test1
+
 echo "Verifying replacement ..."
-#mdadm --detail /dev/md1
 cat /proc/mdstat
+
+echo "---------------------------------------------------"
 ############################## END ################################
