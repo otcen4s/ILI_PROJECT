@@ -40,9 +40,9 @@ echo "Showing changes ..."
 cat /proc/mdstat
 
 ##### Initializing Physical Volumes #####
-#echo "----------------------------------------------"
-#echo "Initializing Physical Volumes (PVs) ..."
-#pvcreate /dev/md0 /dev/md1
+echo "----------------------------------------------"
+echo "Initializing Physical Volumes (PVs) ..."
+pvcreate /dev/md0 /dev/md1
 
 
 ###### Creating VG #####
@@ -104,6 +104,7 @@ umount /dev/FIT_vg/FIT_lv1
 
 lvextend -l +100%FREE /dev/FIT_vg/FIT_lv1
 
+e2fsck -f /dev/FIT_vg/FIT_lv1
 resize2fs /dev/FIT_vg/FIT_lv1
 
 mount /dev/FIT_vg/FIT_lv1 /mnt/test1
