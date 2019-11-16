@@ -103,8 +103,7 @@ echo "Resizing filesystem on FIT_1v1 ..."
 umount /dev/FIT_vg/FIT_lv1
 
 lvextend -l +100%FREE /dev/FIT_vg/FIT_lv1
-
-e2fsck -f /dev/FIT_vg/FIT_lv1
+e2fsck -f /dev/FIT_vg/FIT_lv1 #checking 
 resize2fs /dev/FIT_vg/FIT_lv1
 
 mount /dev/FIT_vg/FIT_lv1 /mnt/test1
@@ -144,6 +143,9 @@ cat /proc/mdstat
 
 echo "Removing faulty disk ..." 
 mdadm --manage /dev/md1 --remove /dev/loop0
+
+echo "Printing informations ..."
+cat /proc/mdstat
 
 echo "Adding new disk ..."
 mdadm --manage /dev/md1 --add /dev/loop4
