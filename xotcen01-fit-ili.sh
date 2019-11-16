@@ -30,19 +30,19 @@ done
 echo "----------------------------------------------"
 
 echo "Creating RAID0 ..."
-mdadm --create /dev/md0 --level=stripe --raid-devices=2 /dev/loop2 /dev/loop3
+mdadm --create /dev/md0 --level=stripe --raid-devices=2 /dev/loop2 /dev/loop3 #RAID0
 
 echo "Creating RAID1 ..."
-mdadm --create /dev/md1 --level=mirror --raid-devices=2 /dev/loop0 /dev/loop1
+mdadm --create /dev/md1 --level=mirror --raid-devices=2 /dev/loop0 /dev/loop1 #RAID1
 
 echo "Showing changes ..."
 #mdadm --detail /dev/md0 /dev/md1
 cat /proc/mdstat
 
 ##### Initializing Physical Volumes #####
-echo "----------------------------------------------"
-echo "Initializing Physical Volumes (PVs) ..."
-pvcreate /dev/md0 /dev/md1
+#echo "----------------------------------------------"
+#echo "Initializing Physical Volumes (PVs) ..."
+#pvcreate /dev/md0 /dev/md1
 
 
 ###### Creating VG #####
