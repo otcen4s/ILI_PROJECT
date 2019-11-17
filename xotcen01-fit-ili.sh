@@ -28,7 +28,7 @@ done
 
 for i in {0..3}; do
 	echo "Creating loop device $i ..."
-	losetup /dev/loop$i disk$i  #creating loop device 
+	losetup loop$i disk$i  #creating loop device 
 done
  
 
@@ -181,14 +181,12 @@ echo "
 "
 
 echo "
-Creating 5th loop device representing new disk (200 MB) ...
-"
+Creating 5th loop device representing new disk (200 MB) ..."
 dd if=/dev/zero of=disk_replace bs=200MB count=1
 losetup loop4 disk_replace
 
 echo "
-Setting faulty disk ...
-"
+Setting faulty disk ..."
 mdadm --manage /dev/md/RAID1 --fail /dev/loop0
 
 echo "
